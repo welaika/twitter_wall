@@ -1,0 +1,230 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/html4/loose.dtd">
+
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>untitled</title>
+  <meta name="generator" content="TextMate http://macromates.com/">
+  <meta name="author" content="Stefano Verna">
+  <script type="text/javascript" src="http://code.jquery.com/jquery-1.6.2.js"></script>
+  <script type="text/javascript" src="timeago.js"></script>
+  <script type="text/javascript" src="http://jashkenas.github.com/coffee-script/extras/coffee-script.js"></script>
+  <link href='http://fonts.googleapis.com/css?family=Actor' rel='stylesheet' type='text/css'>
+
+  <script type="text/coffeescript">
+
+    $(document).ready ->
+      TwitterWall =
+        query: "#grazieberlusconi"
+        unseen_tweets: []
+        seen_tweets: []
+        latest_tweet_downloaded: null
+        is_playing: false
+        age_limit: 0
+        current_tweet_index: 0
+
+        set_query: (q) ->
+          return if q == @query
+          @query = q
+          @seen_tweets = []
+          @unseen_tweets = []
+          latest_tweet_downloaded = null
+
+        play: ->
+          @is_playing = true
+          @timer1 = setInterval (-> TwitterWall.fetch_new_tweets()), 15000
+          @timer2 = setInterval (-> TwitterWall.show_tweet()), 5000
+          $(".tweet").fadeOut()
+          TwitterWall.fetch_new_tweets()
+
+        throw_tweets_older_than: (minutes) ->
+          @age_limit = minutes
+          @unseen_tweets = $.grep @unseen_tweets, (tweet) =>
+            Date.parse(tweet.created_at) > (new Date() - 60000 * @age_limit)
+          @seen_tweets = $.grep @seen_tweets, (tweet) =>
+            Date.parse(tweet.created_at) > (new Date() - 60000 * @age_limit)
+
+        stop: ->
+          clearInterval(@timer1)
+          clearInterval(@timer2)
+          @is_playing = false
+          @unseen_tweets = @seen_tweets.concat(@unseen_tweets)
+          @current_tweet_index = @unseen_tweets.length - 1
+          @show_tweet()
+
+        previous: ->
+          return if @is_playing
+          return if @current_tweet_index == 0
+          @current_tweet_index--
+          @show_tweet()
+
+        next: ->
+          return if @is_playing
+          return if @current_tweet_index == @unseen_tweets.length - 1
+          @current_tweet_index++
+          @show_tweet()
+
+        fetch_new_tweets: ->
+          url = "http://search.twitter.com/search.json?q=#{encodeURIComponent(@query)}&callback=?&rpp=30"
+          url += "&since_id=" + @latest_tweet_downloaded.id if @latest_tweet_downloaded?
+
+          console.log "Cerco quelli dopo #{@latest_tweet_downloaded.id}, ossia '#{@latest_tweet_downloaded.text}'" if @latest_tweet_downloaded?
+          console.log url
+
+          $.getJSON url, (json) =>
+            console.log json
+            if json and json.results
+              for tweet in json.results.reverse()
+                if $.grep(@unseen_tweets.concat(@seen_tweets), (el) -> el.id == tweet.id or el.text == tweet.text).length == 0
+                  @unseen_tweets.push(tweet)
+                  @latest_tweet_downloaded = tweet
+
+                  pic1 = new Image()
+                  pic1.src = "http://api.twitter.com/1/users/profile_image/#{tweet.from_user}.json?size=original"
+
+                  console.log "Aggiunto un tweet! Con id: #{tweet.id} e testo '#{tweet.text}'"
+
+        show_tweet: ->
+          tweet_to_show = null
+
+          if @is_playing
+            if @unseen_tweets.length > 0
+              tweet_to_show = @unseen_tweets.shift()
+              @seen_tweets.push(tweet_to_show)
+            else
+              if @seen_tweets.length == 1
+                @current_tweet_index = 0
+              else
+                new_index = @current_tweet_index
+                while new_index == @current_tweet_index and @seen_tweets.length > 1
+                  new_index = parseInt(Math.random() * @seen_tweets.length)
+                @current_tweet_index = new_index
+
+              tweet_to_show = @seen_tweets[@current_tweet_index]
+          else
+            tweet_to_show = @unseen_tweets[@current_tweet_index]
+
+          $(".tweet").fadeOut ->
+            if tweet_to_show?
+              $(".tweet .message").html(tweet_to_show.text)
+              $(".tweet .author").html("@"+tweet_to_show.from_user)
+              $(".tweet .created_at").text($.timeago(tweet_to_show.created_at))
+              $(".tweet .profile_pic").css(backgroundImage: "url(http://api.twitter.com/1/users/profile_image/#{tweet_to_show.from_user}.json?size=original)")
+              $(".tweet").fadeIn()
+              $('.tweet').css(marginTop: ($(window).height() - $('.tweet').height()) / 2)
+
+      $(".play").click ->
+        if TwitterWall.is_playing == false
+          $(this).html("Stop")
+          $(".next, .previous").hide()
+          $(".query").attr("disabled", "disabled")
+          TwitterWall.set_query $(".query").val()
+          TwitterWall.play()
+        else
+          $(".next, .previous").show()
+          $(".query").removeAttr("disabled")
+          $(this).html("Play")
+          TwitterWall.stop()
+
+      $(".save_minutes").click ->
+        TwitterWall.throw_tweets_older_than parseInt($(".minutes_old").val())
+
+      $(".previous").click -> TwitterWall.previous()
+      $(".next").click -> TwitterWall.next()
+      $(".previous, .next").hide()
+      $(".header").hover(
+        -> $(this).animate(opacity: 1),
+        -> $(this).animate(opacity: 0)
+      )
+
+  </script>
+  <style>
+    body {
+      padding: 0px;
+      margin: 0px;
+      font-family: Actor;
+    }
+    .tweet {
+      width: 70%;
+      font-size: 40px;
+      margin: 0px auto;
+      position: relative;
+      padding-left: 190px;
+    }
+    .tweet .profile_pic {
+      position: absolute;
+      left: 0px;
+      top: 8px;
+      width: 150px;
+      height: 150px;
+      background-position: center;
+      -moz-border-radius: 10px;
+      -webkit-border-radius: 10px;
+    }
+    .tweet .author {
+      margin-bottom: 5px;
+      color: #999;
+      font-size: 70%;
+    }
+    .tweet .created_at {
+      margin-top: 10px;
+      color: #999;
+      font-size: 70%;
+    }
+    .header {
+      position: absolute;
+      top: 0px;
+      width: 96%;
+      background-color: rgba(0,0,0,0.8);
+      color: white;
+      padding: 5px 2%;
+      text-align: right;
+    }
+    .header .left {
+      float: left;
+    }
+    .header .right {
+      float: right;
+    }
+    .header input {
+      border: 1px solid #444;
+      padding: 3px;
+      -moz-border-radius: 3px;
+      -webkit-border-radius: 3px;
+    }
+    .cf:before,
+    .cf:after {
+        content:"";
+        display:table;
+    }
+    .cf:after {
+        clear:both;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="header cf">
+    <div class="left">
+      Nascondi i tweet più vecchi di
+      <input class="minutes_old" />
+      min
+      <button class="save_minutes">OK</button>
+    </div>
+    <div class="right">
+      Hashtag:
+      <input class="query" />
+      <button class="play">Play</button>
+      <button class="previous">&laquo;</button>
+      <button class="next">&raquo;</button>
+    </div>
+  </div>
+  <div class="tweet">
+    <div class="profile_pic"></div>
+    <div class="author"></div>
+    <div class="message"></div>
+    <div class="created_at"></div>
+  </div>
+</body>
+</html>
