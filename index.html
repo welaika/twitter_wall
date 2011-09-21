@@ -34,9 +34,10 @@
         play: ->
           @is_playing = true
           @timer1 = setInterval (-> TwitterWall.fetch_new_tweets()), 15000
-          @timer2 = setInterval (-> TwitterWall.show_tweet()), 5000
           $(".tweet").fadeOut()
-          TwitterWall.fetch_new_tweets()
+          TwitterWall.fetch_new_tweets =>
+            @timer2 = setInterval (-> TwitterWall.show_tweet()), 5000
+            TwitterWall.show_tweet()
 
         throw_tweets_older_than: (minutes) ->
           @age_limit = minutes
@@ -65,7 +66,7 @@
           @current_tweet_index++
           @show_tweet()
 
-        fetch_new_tweets: ->
+        fetch_new_tweets: (callback) ->
           url = "http://search.twitter.com/search.json?q=#{encodeURIComponent(@query)}&callback=?&rpp=30"
           url += "&since_id=" + @latest_tweet_downloaded.id if @latest_tweet_downloaded?
 
@@ -84,6 +85,7 @@
                   pic1.src = "http://api.twitter.com/1/users/profile_image/#{tweet.from_user}.json?size=original"
 
                   console.log "Aggiunto un tweet! Con id: #{tweet.id} e testo '#{tweet.text}'"
+              callback() if (callback)
 
         show_tweet: ->
           tweet_to_show = null
