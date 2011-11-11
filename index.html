@@ -20,6 +20,23 @@
   <script type="text/coffeescript">
 
     $(document).ready ->
+      $.extend
+        getUrlVars: ->
+          vars = []
+          hash = undefined
+          hashes = window.location.href.slice(window.location.href.indexOf("?") + 1).split("&")
+          i = 0
+
+          while i < hashes.length
+            hash = hashes[i].split("=")
+            vars.push hash[0]
+            vars[hash[0]] = hash[1]
+            i++
+          vars
+
+        getUrlVar: (name) ->
+          $.getUrlVars()[name]
+
       TwitterWall =
         query: "#grazieberlusconi"
         unseen_tweets: []
@@ -128,6 +145,14 @@
         "background-size": wi + "px " + wi + "px"
         "border-radius": wi / 10 + "px"
 
+        
+
+      allVars = $.getUrlVars("hashtag")
+      unless allVars["hashtag"] is `undefined`
+        TwitterWall.set_query allVars["hashtag"]
+        TwitterWall.play()
+        $(".header").css("display","none")
+        $(".profile_pic").css("opacity", "1")
 
       $(".play").click ->
         if TwitterWall.is_playing == false
@@ -136,6 +161,8 @@
           $(".query").attr("disabled", "disabled")
           TwitterWall.set_query $(".query").val()
           TwitterWall.play()
+          $(".profile_pic").css("opacity", "1")
+          $(".code").val(document.URL+"?hashtag="+$(".query").val())
         else
           $(".next, .previous").show()
           $(".query").removeAttr("disabled")
@@ -246,6 +273,7 @@
       <button class="save_minutes">OK</button>
     </div>
     <div class="right">
+      Code: <input class="code" />
       Hashtag:
       <input class="query" />
       <button class="play">Play</button>
