@@ -11,7 +11,12 @@
   <script type="text/javascript" src="timeago.js"></script>
   <script type="text/javascript" src="http://jashkenas.github.com/coffee-script/extras/coffee-script.js"></script>
   <link href='http://fonts.googleapis.com/css?family=Actor' rel='stylesheet' type='text/css'>
-
+  <!--
+  jquery plugin on github 
+  https://github.com/davatron5000/FitText.js
+  text resize based on screen width
+  -->
+  <script type="text/javascript" src="jquery.fittext.js"></script>
   <script type="text/coffeescript">
 
     $(document).ready ->
@@ -115,6 +120,14 @@
               $(".tweet .profile_pic").css(backgroundImage: "url(http://api.twitter.com/1/users/profile_image/#{tweet_to_show.from_user}.json?size=original)")
               $(".tweet").fadeIn()
               $('.tweet').css(marginTop: ($(window).height() - $('.tweet').height()) / 2)
+      
+      wi = $(".tweet").width() / 100 * 19
+      $(".profile_pic").width wi
+      $(".profile_pic").height wi
+      $(".profile_pic").css
+        "background-size": wi + "px " + wi + "px"
+        "border-radius": wi / 10 + "px"
+
 
       $(".play").click ->
         if TwitterWall.is_playing == false
@@ -140,6 +153,17 @@
         -> $(this).animate(opacity: 0)
       )
 
+      $(".tweet").fitText 1.8,
+        maxFontSize: "40px"
+    
+    $(window).resize ->
+      wi = $(".tweet").width() / 100 * 19
+      $(".profile_pic").width wi
+      $(".profile_pic").height wi
+      $(".profile_pic").css
+        "background-size": wi + "px " + wi + "px"
+        "border-radius": wi / 10 + "px"
+      
   </script>
   <style>
     body {
@@ -147,12 +171,15 @@
       margin: 0px;
       font-family: Actor;
     }
+    .header{
+      font-size: 16px;
+    }
     .tweet {
-      width: 70%;
+      width: 60%;
       font-size: 40px;
       margin: 0px auto;
       position: relative;
-      padding-left: 190px;
+      padding-left: 13%;
     }
     .tweet .profile_pic {
       position: absolute;
@@ -160,9 +187,13 @@
       top: 8px;
       width: 150px;
       height: 150px;
+      opacity: 0;
+      background: #cdcdcd;
       background-position: center;
+      border-radius: 10px;
       -moz-border-radius: 10px;
       -webkit-border-radius: 10px;
+      background-size: 150px 150px;
     }
     .tweet .author {
       margin-bottom: 5px;
