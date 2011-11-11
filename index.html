@@ -144,8 +144,12 @@
       $(".profile_pic").css
         "background-size": wi + "px " + wi + "px"
         "border-radius": wi / 10 + "px"
-
-        
+      
+      logosize = $("body").width()
+      $(".logo").width logosize/100*15
+      $(".logo").height (logosize/100*15)/3.5
+      $(".logo").css
+        "background-size": logosize/100*15 + "px " + (logosize/100*15)/3.5 + "px"
 
       allVars = $.getUrlVars("hashtag")
       unless allVars["hashtag"] is `undefined`
@@ -190,6 +194,11 @@
       $(".profile_pic").css
         "background-size": wi + "px " + wi + "px"
         "border-radius": wi / 10 + "px"
+      logosize = $("body").width()
+      $(".logo").width logosize/100*15
+      $(".logo").height (logosize/100*15)/3.5
+      $(".logo").css
+        "background-size": logosize/100*15 + "px " + (logosize/100*15)/3.5 + "px"
       
   </script>
   <style>
@@ -262,6 +271,13 @@
         clear:both;
     }
 
+    .logo{
+      background: url('welaika.png');
+      position: fixed;
+      bottom: 5px;
+      right: 5px;
+    }
+
   </style>
 </head>
 <body>
@@ -287,5 +303,6 @@
     <div class="message"></div>
     <div class="created_at"></div>
   </div>
+  <div class="logo"></div>
 </body>
 </html>
