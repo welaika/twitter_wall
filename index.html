@@ -11,12 +11,34 @@
   <script type="text/javascript" src="timeago.js"></script>
   <script type="text/javascript" src="http://jashkenas.github.com/coffee-script/extras/coffee-script.js"></script>
   <link href='http://fonts.googleapis.com/css?family=Actor' rel='stylesheet' type='text/css'>
-
+  <!--
+  jquery plugin on github 
+  https://github.com/davatron5000/FitText.js
+  text resize based on screen width
+  -->
+  <script type="text/javascript" src="jquery.fittext.js"></script>
   <script type="text/coffeescript">
 
     $(document).ready ->
+      $.extend
+        getUrlVars: ->
+          vars = []
+          hash = undefined
+          hashes = window.location.href.slice(window.location.href.indexOf("?") + 1).split("&")
+          i = 0
+
+          while i < hashes.length
+            hash = hashes[i].split("=")
+            vars.push hash[0]
+            vars[hash[0]] = hash[1]
+            i++
+          vars
+
+        getUrlVar: (name) ->
+          $.getUrlVars()[name]
+
       TwitterWall =
-        query: "#grazieberlusconi"
+        query: "#welaika"
         unseen_tweets: []
         seen_tweets: []
         latest_tweet_downloaded: null
@@ -115,6 +137,26 @@
               $(".tweet .profile_pic").css(backgroundImage: "url(http://api.twitter.com/1/users/profile_image/#{tweet_to_show.from_user}.json?size=original)")
               $(".tweet").fadeIn()
               $('.tweet').css(marginTop: ($(window).height() - $('.tweet').height()) / 2)
+      
+      wi = $(".tweet").width() / 100 * 19
+      $(".profile_pic").width wi
+      $(".profile_pic").height wi
+      $(".profile_pic").css
+        "background-size": wi + "px " + wi + "px"
+        "border-radius": wi / 10 + "px"
+      
+      logosize = $("body").width()
+      $(".logo").width logosize/100*15
+      $(".logo").height (logosize/100*15)/3.5
+      $(".logo").css
+        "background-size": logosize/100*15 + "px " + (logosize/100*15)/3.5 + "px"
+
+      allVars = $.getUrlVars("hashtag")
+      unless allVars["hashtag"] is `undefined`
+        TwitterWall.set_query allVars["hashtag"]
+        TwitterWall.play()
+        $(".header").css("display","none")
+        $(".profile_pic").css("opacity", "1")
 
       $(".play").click ->
         if TwitterWall.is_playing == false
@@ -123,6 +165,8 @@
           $(".query").attr("disabled", "disabled")
           TwitterWall.set_query $(".query").val()
           TwitterWall.play()
+          $(".profile_pic").css("opacity", "1")
+          $(".code").val(document.URL+"?hashtag="+$(".query").val())
         else
           $(".next, .previous").show()
           $(".query").removeAttr("disabled")
@@ -140,6 +184,22 @@
         -> $(this).animate(opacity: 0)
       )
 
+      $(".tweet").fitText 1.8,
+        maxFontSize: "40px"
+    
+    $(window).resize ->
+      wi = $(".tweet").width() / 100 * 19
+      $(".profile_pic").width wi
+      $(".profile_pic").height wi
+      $(".profile_pic").css
+        "background-size": wi + "px " + wi + "px"
+        "border-radius": wi / 10 + "px"
+      logosize = $("body").width()
+      $(".logo").width logosize/100*15
+      $(".logo").height (logosize/100*15)/3.5
+      $(".logo").css
+        "background-size": logosize/100*15 + "px " + (logosize/100*15)/3.5 + "px"
+      
   </script>
   <style>
     body {
@@ -147,12 +207,15 @@
       margin: 0px;
       font-family: Actor;
     }
+    .header{
+      font-size: 16px;
+    }
     .tweet {
-      width: 70%;
+      width: 60%;
       font-size: 40px;
       margin: 0px auto;
       position: relative;
-      padding-left: 190px;
+      padding-left: 13%;
     }
     .tweet .profile_pic {
       position: absolute;
@@ -160,9 +223,13 @@
       top: 8px;
       width: 150px;
       height: 150px;
+      opacity: 0;
+      background: #cdcdcd;
       background-position: center;
+      border-radius: 10px;
       -moz-border-radius: 10px;
       -webkit-border-radius: 10px;
+      background-size: 150px 150px;
     }
     .tweet .author {
       margin-bottom: 5px;
@@ -204,6 +271,13 @@
         clear:both;
     }
 
+    .logo{
+      background: url('welaika.png');
+      position: fixed;
+      bottom: 5px;
+      right: 5px;
+    }
+
   </style>
 </head>
 <body>
@@ -215,6 +289,7 @@
       <button class="save_minutes">OK</button>
     </div>
     <div class="right">
+      Code: <input class="code" />
       Hashtag:
       <input class="query" />
       <button class="play">Play</button>
@@ -228,5 +303,6 @@
     <div class="message"></div>
     <div class="created_at"></div>
   </div>
+  <div class="logo"></div>
 </body>
 </html>
