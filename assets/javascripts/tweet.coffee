@@ -35,6 +35,8 @@ $(document).ready ->
 
     play: ->
       @is_playing = true
+      @timer1 = setInterval (-> TwitterWall.fetch_new_tweets()), 30000
+      $(".tweet").slideUp()
       TwitterWall.fetch_new_tweets =>
         @timer2 = setInterval (-> TwitterWall.show_tweet()), 7500
         TwitterWall.show_tweet()
