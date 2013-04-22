@@ -1,0 +1,116 @@
+body {
+  padding: 0px;
+  margin: 0px;
+  font-family: Actor;
+  background-color: #c0deed;
+}
+
+p{
+  margin: 0;
+  padding: 0;
+}
+
+.settings{
+  font-size: 16px;
+}
+
+.container, .footer_tweet{
+  overflow: hidden;
+}
+
+.container{
+  margin: 0 auto;
+  width: 90%;
+  background-color: white;
+  box-shadow: 1px 1px 3px #0084b4;
+  -moz-box-shadow: 1px 1px 3px #0084b4;
+  -webkit-box-shadow: 1px 1px 3px #0084b4;
+  border-radius: 20px 20px 0 20px;
+  -moz-border-radius: 20px 20px 0 20px;
+  -webkit-border-radius: 20px 20px 0 20px;
+  position: relative;
+  z-index: 100;
+}
+
+.tweet{
+  height: 100%;
+}
+
+.profile_pic {
+  float: left;
+  opacity: 0;
+  background: #0084b4;
+  background-position: center;
+  box-shadow: inset 0 0 3px #333;
+  -moz-box-shadow: inset 0 0 3px #333;
+  -webkit-box-shadow: inset 0 0 3px #333;
+}
+.author, .created_at {
+  color: #999;
+  font-size: 60%;
+}
+
+.message_text{ 
+  text-align: center;
+  border-bottom: 2px solid #c0deed;
+}
+
+.overimage .message_text, .overimage .author, .overimage .created_at{
+  color: white;
+  text-shadow: 3px 3px 2px black;
+}
+
+.settings_button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+.settings_button:hover{
+  cursor: pointer;
+}
+
+.settings{
+  top: 0px;
+  background-color: rgba(0,0,0,0.8);
+  color: white;
+  text-align: right;
+  position: absolute;
+  z-index: 10;
+  border-radius: 20px 20px 0 20px;
+  -moz-border-radius: 20px 20px 0 20px;
+  -webkit-border-radius: 20px 20px 0 20px;
+  text-align: center;
+}
+
+.settings input {
+  border: 1px solid #444;
+  padding: 3px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+}
+
+.settings .minutes_old{
+  width: 50px;
+}
+
+.settings .save_minutes{
+  margin-right: 30px;
+}
+
+.cf:before,
+.cf:after {
+    content:"";
+    display:table;
+}
+.cf:after {
+    clear:both;
+}
+
+.logo{
+  background: url('../images/welaika.png') no-repeat right center transparent;
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  z-index: 1000;
+}
