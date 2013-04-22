@@ -178,6 +178,20 @@ $(document).ready ->
   $(".next").click -> TwitterWall.next()
   $(".previous, .next").hide()
 
+  $('.settings_button').click -> 
+    $(this).toggleClass('opened')
+    $(this).toggleClass('closed')
+    if $(this).hasClass('closed')
+      $(".settings").animate(top: ($(window).height() / 10))
+      $(".container").animate
+        "height": ($(window).height() / 10) * 8 +'px'
+        "margin-top": ($(window).height() / 10) + 'px'
+    else
+      $(".settings").animate(top: '+10px')
+      $(".container").animate
+        "height": ($(window).height() / 10) * 7 +'px'
+        "margin-top": ($(window).height() / 10) * 2 + 'px'
+
   sizing = ->
 
   sizing()
