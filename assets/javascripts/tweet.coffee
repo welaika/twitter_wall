@@ -143,3 +143,10 @@ $(document).ready ->
   $(".next").click -> TwitterWall.next()
   $(".previous, .next").hide()
 
+  sizing = ->
+
+  sizing()
+
+  $(window).resize ->
+
+    sizing()
