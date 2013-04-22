@@ -90,6 +90,20 @@ $(document).ready ->
                   key = '034df61c7f0811e1ab2f4040d3dc5c07'
                   api_url = 'http://api.embed.ly/1/oembed?key=' + key + '&url=' + link + '&callback=?'
                   $.getJSON api_url, (json) ->
+                    if json.type == "photo"
+                      imageh = json.height
+                      imagew = json.width
+                      image_url = "#{json.url}"
+                      if (imagew >= imageh)
+                        tweet.imagewidth = "auto"
+                        tweet.imageheight = "100%"
+                        tweet.imagesrc = image_url
+                      else 
+                        tweet.imagewidth = "100%"
+                        tweet.imageheight = "auto"
+                        tweet.imagesrc = image_url
+                    else if json.type == "rich"
+                      $content = $(json.html)
                       
                       tweet.extra_content = $content
           callback() if (callback)
@@ -116,6 +130,20 @@ $(document).ready ->
 
 
         if tweet_to_show?     
+          if tweet_to_show.imagesrc
+            $(".container").css
+              "background-size": tweet_to_show.imageheight + " " + tweet_to_show.imagewidth
+              "background-image": "url('" + tweet_to_show.imagesrc + "')"
+              "background-position": "center center"
+            $(".container").addClass("overimage")
+          else 
+            $(".container").css
+              "background-image": "none"
+            $(".container").removeClass("overimage")
+          $(".tweet .message_text").html(tweet_to_show.text)
+          $(".tweet .author").html("@"+tweet_to_show.from_user)
+          $(".tweet .created_at").text($.timeago(tweet_to_show.created_at))
+          $(".tweet .profile_pic").css(backgroundImage: "url(http://api.twitter.com/1/users/profile_image/#{tweet_to_show.from_user}.json?size=original)")
         else
   allVars = $.getUrlVars("hashtag")
   unless allVars["hashtag"] is `undefined`
