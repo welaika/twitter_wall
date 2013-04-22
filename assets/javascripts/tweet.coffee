@@ -154,8 +154,10 @@ $(document).ready ->
   unless allVars["hashtag"] is `undefined`
     TwitterWall.set_query allVars["hashtag"]
     TwitterWall.play()
+    $(".settings").css("display","none")
     $(".settings_button").css("display","none")
     $(".profile_pic").css("opacity", "1")
+
   $(".play").click ->
     if TwitterWall.is_playing == false
       $(this).html("Stop")
@@ -193,9 +195,61 @@ $(document).ready ->
         "margin-top": ($(window).height() / 10) * 2 + 'px'
 
   sizing = ->
+    $(".tweet").fitText 2.5,
+      maxFontSize: "38px"
+
+    # resize tweet container
+    wh = $(window).height()
+    $(".container").height (wh/10) * 8
+    $(".container").css
+      "margin-top": wh / 10 + "px"
+
+    # resize message-text
+    ch = $(".container").height()
+    cw = $(".container").width()
+    $(".message_text").height (ch/10) * 5.2
+    $(".message_text").width (cw/10) * 9
+    $(".message_text").css
+      "padding": (ch / 10) * 2.7 + "px " + (cw/10) * 0.5 + "px 0"
+
+    # resize footer container
+    $(".footer_tweet").height (ch/10) * 2
+    fh = $(".footer_tweet").height()
+    pphw = (fh/10) * 8.5
+    $(".profile_pic").height pphw
+    $(".profile_pic").width pphw
+    $(".profile_pic").css
+      "background-size": pphw + "px " + pphw + "px"
+      "border-radius": pphw / 2 + "px"
+      "-webkit-border-radius": pphw / 2 + "px"
+      "-moz-border-radius": pphw / 2 + "px"
+      "margin": ((fh/10) * 1.5) / 2 + "px " + (fh/10) * 1.5 + "px"
+    auth = $(".author").height()
+    creath = $(".created_at").height()
+    $(".author").css
+      "margin-top": (fh - (auth + creath)) / 2 + "px"
+
+    # resize settings
+    $(".settings").height (ch/10 * 9.5)
+    $(".settings").width cw
+    $(".settings").css
+      "top": wh / 10 + "px"
+      "left": ($(window).width() - cw) / 2
+      "padding-top": ch/20 
+
+    # resize logo
+    ww = $(window).width()
+    lw = ww / 10 * 1.5
+    lh = ww / 10 * 1.5 / 2.04
+    $(".logo").width lw
+    $(".logo").height lh
+    $(".logo").css
+      "background-size": lw + "px " + lh + "px"
+
 
   sizing()
 
   $(window).resize ->
 
     sizing()
+
