@@ -129,6 +129,7 @@ $(document).ready ->
         tweet_to_show = @unseen_tweets[@current_tweet_index]
 
 
+      $(".tweet").slideUp ->
         if tweet_to_show?     
           if tweet_to_show.imagesrc
             $(".container").css
@@ -144,7 +145,10 @@ $(document).ready ->
           $(".tweet .author").html("@"+tweet_to_show.from_user)
           $(".tweet .created_at").text($.timeago(tweet_to_show.created_at))
           $(".tweet .profile_pic").css(backgroundImage: "url(http://api.twitter.com/1/users/profile_image/#{tweet_to_show.from_user}.json?size=original)")
+          $(".tweet").slideDown()
         else
+          $(".tweet").slideDown()
+
   allVars = $.getUrlVars("hashtag")
   unless allVars["hashtag"] is `undefined`
     TwitterWall.set_query allVars["hashtag"]
