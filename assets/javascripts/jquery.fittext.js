@@ -5,6 +5,7 @@
 * Copyright 2011, Dave Rupert http://daverupert.com
 * Released under the WTFPL license 
 * http://sam.zoy.org/wtfpl/
+* https://github.com/davatron5000/FitText.js
 *
 * Date: Thu May 05 14:23:00 2011 -0600
 */
