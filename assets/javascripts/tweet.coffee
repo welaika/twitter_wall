@@ -147,6 +147,7 @@ $(document).ready ->
           $(".tweet .profile_pic").css(backgroundImage: "url(http://api.twitter.com/1/users/profile_image/#{tweet_to_show.from_user}.json?size=original)")
           $(".tweet").slideDown()
         else
+          $(".tweet .message_text").html('Nessun tweet trovato')
           $(".tweet").slideDown()
 
   allVars = $.getUrlVars("hashtag")
